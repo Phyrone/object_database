@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["object_database"] = [{"text":"impl <a class=\"trait\" href=\"clap/derive/trait.Parser.html\" title=\"trait clap::derive::Parser\">Parser</a> for <a class=\"struct\" href=\"object_database/cli/cli_spec/struct.CommandLine.html\" title=\"struct object_database::cli::cli_spec::CommandLine\">CommandLine</a>","synthetic":false,"types":["object_database::cli::cli_spec::CommandLine"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["CONSOLE_APPENDER_NAME",""]],"fn":[["create_console_appender",""],["create_logger_config",""],["create_root_logger",""],["init",""]]});

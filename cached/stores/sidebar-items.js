@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["SizedCache","Least Recently Used / `Sized` Cache"],["TimedCache","Cache store bound by time"],["TimedSizedCache","Timed LRU Cache"],["UnboundCache","Default unbounded cache"]]});

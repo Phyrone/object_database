@@ -1,0 +1,4 @@
+(function() {var implementors = {};
+implementors["ron"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.60.0/core/fmt/trait.Binary.html\" title=\"trait core::fmt::Binary\">Binary</a> for <a class=\"struct\" href=\"ron/extensions/struct.Extensions.html\" title=\"struct ron::extensions::Extensions\">Extensions</a>","synthetic":false,"types":["ron::extensions::Extensions"]}];
+implementors["v8"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.60.0/core/fmt/trait.Binary.html\" title=\"trait core::fmt::Binary\">Binary</a> for <a class=\"struct\" href=\"v8/struct.WriteOptions.html\" title=\"struct v8::WriteOptions\">WriteOptions</a>","synthetic":false,"types":["v8::string::WriteOptions"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

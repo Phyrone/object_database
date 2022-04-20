@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["object_database"] = [{"text":"impl <a class=\"trait\" href=\"rust_embed/trait.RustEmbed.html\" title=\"trait rust_embed::RustEmbed\">RustEmbed</a> for <a class=\"struct\" href=\"object_database/resources/struct.Resources.html\" title=\"struct object_database::resources::Resources\">Resources</a>","synthetic":false,"types":["object_database::resources::Resources"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
