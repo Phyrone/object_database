@@ -17,7 +17,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ./target/
-        key: ${{ runner.os }}-${{ hashFiles('**/') }}
+        key: ${{ runner.os }}-${{hashFiles('Cargo.lock') }}
     - name: Generate Docs
       run: cargo doc -r
     - name: Deploy 🚀

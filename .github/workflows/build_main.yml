@@ -16,7 +16,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ./target/
-        key: ${{ runner.os }}-${{ hashFiles('**/') }}
+        key: ${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
     - name: Build
       run: cargo build --verbose
     - name: Run tests
