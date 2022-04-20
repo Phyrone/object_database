@@ -19,7 +19,9 @@ jobs:
     - name: Cache
       uses: actions/cache@v3
       with:
-        path: ./target/
+        path: | 
+          ./target/
+          Cargo.lock
         key: ${{ runner.os }}-${{ steps.branch_name.outputs.branch }}
     - name: Build
       run: cargo build
