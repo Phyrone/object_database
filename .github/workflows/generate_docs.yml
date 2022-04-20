@@ -23,7 +23,7 @@ jobs:
         path: |
           ./target/
           Cargo.lock
-        key: ${{ runner.os }}-${{ steps.branch_name.outputs.branch }}
+        key: docs>${{ runner.os }}-${{ steps.branch_name.outputs.branch }}
     - name: Generate Docs
       run: cargo doc
     - name: Deploy 🚀

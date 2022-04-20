@@ -22,7 +22,7 @@ jobs:
         path: | 
           ./target/
           Cargo.lock
-        key: ${{ runner.os }}-${{ steps.branch_name.outputs.branch }}
+        key: build>${{ runner.os }}-${{ steps.branch_name.outputs.branch }}
     - name: Build
       run: cargo build
     - name: Run tests
