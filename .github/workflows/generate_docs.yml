@@ -23,7 +23,7 @@ jobs:
         path: ./target/
         key: ${{ runner.os }}-${{ steps.branch_name.outputs.branch }}
     - name: Generate Docs
-      run: cargo doc -r
+      run: cargo doc
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@v4.3.0
       with:

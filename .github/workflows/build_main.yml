@@ -22,9 +22,9 @@ jobs:
         path: ./target/
         key: ${{ runner.os }}-${{ steps.branch_name.outputs.branch }}
     - name: Build
-      run: cargo build --verbose
+      run: cargo build
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test
     - name: Run benchmarks
-      run: cargo bench --verbose
+      run: cargo bench
 
