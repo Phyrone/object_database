@@ -1,4 +1,4 @@
-name: Build,Test,Docs
+name: Build
 
 on:
   push:
@@ -24,16 +24,12 @@ jobs:
           profile: minimal
           toolchain: stable
       - uses: Swatinem/rust-cache@v1
-        with:
-          cache-key: ${{ runner.os }}/${{ github.ref }}
-
       - name: Cache
         uses: actions/cache@v3
         with:
           path: |
             **/target/
-            **/Cargo.lock
-          key: ${{ runner.os }}/${{ github.ref }}
+          key: ${{ hashFiles('**/Cargo.lock') }}/${{ runner.os }}/${{ github.ref }}
       - name: Build
         run: cargo build -r
       - name: Run tests
@@ -52,8 +48,7 @@ jobs:
         with:
           path: |
             **/target/
-            **/Cargo.lock
-          key: ${{ runner.os }}/${{ github.ref }}
+          key: ${{ hashFiles('**/Cargo.lock') }}/${{ runner.os }}/${{ github.ref }}
       - name: Generate Docs
         run: cargo doc
       - name: Deploy 🚀
