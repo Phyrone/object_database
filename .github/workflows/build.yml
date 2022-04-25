@@ -22,9 +22,9 @@ jobs:
         with:
           profile: minimal
           toolchain: stable
-      #      - uses: Swatinem/rust-cache@v1
-      #        with:
-      #          cache-key: "${{ steps.branch_name.outputs.branch }}"
+      - uses: Swatinem/rust-cache@v1
+        with:
+          cache-key: ${{ runner.os }}/${{ github.ref }}
 
       - name: Cache
         uses: actions/cache@v3
