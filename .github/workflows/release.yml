@@ -4,6 +4,7 @@ on:
   release:
     types:
       - created
+  workflow_dispatch:
 
 #on: push
 
@@ -19,28 +20,18 @@ jobs:
           # Linux
           - target: "x86_64-unknown-linux-gnu"
             platform: "ubuntu-latest"
-            export: "linux_x86_64"
-          - target: "i686-unknown-linux-gnu"
-            platform: "ubuntu-latest"
-            export: "linux_i686"
+            export: "x86_64-linux"
 
             # Windows
           - target: "x86_64-pc-windows-msvc"
             platform: "windows-latest"
-            export: "windows_x86_64"
-            file_extension: ".exe"
-          - target: "i686-pc-windows-msvc"
-            platform: "windows-latest"
-            export: "windows_i686"
+            export: "x86_64-windows"
             file_extension: ".exe"
 
             # MacOS
           - target: "x86_64-apple-darwin"
             platform: "macos-latest"
-            export: "macos_x86_64"
-          - target: "aarch64-apple-darwin"
-            platform: "macos-latest"
-            export: "macos_aarch64"
+            export: "x86_64-macos"
 
     name: Build Binary for ${{ matrix.export }}
     runs-on: ${{ matrix.platform }}
@@ -65,5 +56,5 @@ jobs:
           tag: ${{ github.ref }}
           release_id: ${{ steps.create_release.outputs.id }}
           file: target/${{ matrix.target }}/release/object_database${{ matrix.file_extension }}
-          asset_name: ${{ matrix.export }}${{ matrix.file_extension }}
+          asset_name: object_database-${{ matrix.export }}${{ matrix.file_extension }}
 
