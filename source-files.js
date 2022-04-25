@@ -2,7 +2,7 @@ var N = null;var sourcesIndex = {};
 sourcesIndex["ahash"] = {"name":"","files":["convert.rs","fallback_hash.rs","lib.rs","operations.rs","random_state.rs","specialize.rs"]};
 sourcesIndex["aho_corasick"] = {"name":"","dirs":[{"name":"packed","dirs":[{"name":"teddy","files":["compile.rs","mod.rs","runtime.rs"]}],"files":["api.rs","mod.rs","pattern.rs","rabinkarp.rs","vector.rs"]}],"files":["ahocorasick.rs","automaton.rs","buffer.rs","byte_frequencies.rs","classes.rs","dfa.rs","error.rs","lib.rs","nfa.rs","prefilter.rs","state_id.rs"]};
 sourcesIndex["anyhow"] = {"name":"","files":["backtrace.rs","chain.rs","context.rs","ensure.rs","error.rs","fmt.rs","kind.rs","lib.rs","macros.rs","ptr.rs","wrapper.rs"]};
-sourcesIndex["arc_swap"] = {"name":"","files":["access.rs","as_raw.rs","cache.rs","compile_fail_tests.rs","debt.rs","gen_lock.rs","lib.rs","ref_cnt.rs"]};
+sourcesIndex["arc_swap"] = {"name":"","dirs":[{"name":"debt","files":["fast.rs","helping.rs","list.rs","mod.rs"]},{"name":"docs","files":["internal.rs","limitations.rs","mod.rs","patterns.rs","performance.rs"]},{"name":"strategy","files":["hybrid.rs","mod.rs","rw_lock.rs"]}],"files":["access.rs","as_raw.rs","cache.rs","compile_fail_tests.rs","lib.rs","ref_cnt.rs"]};
 sourcesIndex["async_once"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["async_trait"] = {"name":"","files":["args.rs","expand.rs","lib.rs","lifetime.rs","parse.rs","receiver.rs"]};
 sourcesIndex["atomic"] = {"name":"","files":["fallback.rs","lib.rs","ops.rs"]};
