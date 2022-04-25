@@ -1,35 +1,49 @@
-name: Build
+name: Build and Release
 
-#on:
-#  release:
-on: push
+on:
+  release:
+    types:
+      - created
 
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
-
+#on: push
 
 env:
   CARGO_TERM_COLOR: always
-
-
 
 jobs:
   build_and_publish:
     strategy:
       matrix:
-        target:
-          - "x86_64-unknown-linux-gnu"
-          - "x86_64-apple-darwin"
-          - "x86_64-pc-windows-msvc"
-        platform:
-          - "ubuntu-latest"
-          - "macos-latest"
-          - "windows-latest"
+        include:
 
+          # Linux
+          - target: "x86_64-unknown-linux-gnu"
+            platform: "ubuntu-latest"
+            export: "linux_x86_64"
+          - target: "i686-unknown-linux-gnu"
+            platform: "ubuntu-latest"
+            export: "linux_i686"
 
-    name: Build and Publish
-    runs-on: ubuntu-latest
+            # Windows
+          - target: "x86_64-pc-windows-msvc"
+            platform: "windows-latest"
+            export: "windows_x86_64"
+            file_extension: ".exe"
+          - target: "i686-pc-windows-msvc"
+            platform: "windows-latest"
+            export: "windows_i686"
+            file_extension: ".exe"
+
+            # MacOS
+          - target: "x86_64-apple-darwin"
+            platform: "macos-latest"
+            export: "macos_x86_64"
+          - target: "aarch64-apple-darwin"
+            platform: "macos-latest"
+            export: "macos_aarch64"
+
+    name: Build Binary for ${{ matrix.export }}
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
       - name: Rust Setup
@@ -37,7 +51,19 @@ jobs:
         with:
           profile: minimal
           toolchain: stable
+          target: ${{ matrix.target }}
       - name: Rust Cache
         uses: Swatinem/rust-cache@v1
       - name: Build
         run: cargo build --target ${{ matrix.target }} --release
+      - name: Upload files to a GitHub release
+        uses: svenstaro/upload-release-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          release_id: ${{ steps.create_release.outputs.id }}
+          file: target/${{ matrix.target }}/release/object_database${{ matrix.file_extension }}
+          asset_name: ${{ matrix.export }}${{ matrix.file_extension }}
+
