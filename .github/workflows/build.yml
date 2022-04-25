@@ -2,8 +2,9 @@ name: Build,Test,Docs
 
 on:
   push:
-    branches:
-      - main
+    branches-ignore:
+      - renovate/*
+  pull_request:
 
 concurrency:
   group: ${{ github.ref }}
@@ -34,9 +35,9 @@ jobs:
             **/Cargo.lock
           key: ${{ runner.os }}/${{ github.ref }}
       - name: Build
-        run: cargo build
+        run: cargo build -r
       - name: Run tests
-        run: cargo test
+        run: cargo test -r
       - name: Run benchmarks
         run: cargo bench
   docs:
