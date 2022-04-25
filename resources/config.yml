@@ -1,4 +1,5 @@
-network:
-  - "tcp://0.0.0.0:4433"
-  - "udp://0.0.0.0:4433"
-  - "unix://./unix.sock"
+network:  
+  bind:
+    - "tcp://0.0.0.0:4433"
+    - "udp://0.0.0.0:4433"
+    - "unix://./unix.sock"

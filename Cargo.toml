@@ -5,27 +5,39 @@ edition = "2021"
 # About the Software
 name = "object_database"
 version = "0.0.1-dev"
-description="An Object-Oriented Database"
+description = "An Object-Oriented Database"
 
 # About the Author(s)
 authors = [
     "Samuel Laqua (Phyrone) <phyrone@phyrone.de>"
 ]
-homepage="https://github.com/Phyrone/object_database"
+homepage = "https://github.com/Phyrone/object_database"
 
 
 [dependencies]
+core = { path = "./core" }
 cached = "0.34.0"
-clap = { version = "3.1.10", features = ["derive"] }
+clap = { version = "3.1.10", features = ["derive", "color"] }
 log = "0.4.16"
 log4rs = "1.0.0"
-quiche = "0.12.0"
 tokio = { version = "1.17.0", features = ["full", "rt-multi-thread"] }
-stretto = { version = "0.4.3", features = ["async"] }
-pbr = "1.0.4"
-v8 = "0.41.0"
+#pbr = "1.0.4"
+#v8 = "0.41.0"
 config = { version = "0.13.1", features = ["json", "yaml"] }
 rust-embed = "6.4.0"
+async-trait = "0.1.53"
+url = "2.2.2"
+
+[workspace]
+members = [
+    "common",
+    "core",
+    "plugin_api",
+
+    "buildin/acceptor/udp",
+    "buildin/storage/memory",
+    "buildin/storage/plain_file",
+]
 
 
 #[target]
