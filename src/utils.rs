@@ -1,7 +1,5 @@
 use log::trace;
 
-pub mod serializer;
-pub mod string_parser;
 
 pub const VERSION: &str = CARGO_PKG_VERSION;
 
@@ -16,7 +14,7 @@ pub const CARGO_PKG_VERSION_MINOR: &str = env!("CARGO_PKG_VERSION_MINOR");
 pub const CARGO_PKG_VERSION_PATCH: &str = env!("CARGO_PKG_VERSION_PATCH");
 pub const CARGO_PKG_VERSION_PRE: &str = env!("CARGO_PKG_VERSION_PRE");
 
-pub async fn log_const() {
+pub fn log_const() {
     trace!("Cargo:");
     trace!("  CARGO_PKG_VERSION: {}", CARGO_PKG_VERSION);
     trace!("  CARGO_PKG_VERSION_MAJOR: {}", CARGO_PKG_VERSION_MAJOR);
