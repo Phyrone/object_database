@@ -54,7 +54,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
+          tag: gen-rel-${{ github.sha }}
           release_id: ${{ steps.create_release.outputs.id }}
           file: target/${{ matrix.target }}/release/object_database${{ matrix.file_extension }}
           asset_name: object_database-${{ matrix.export }}${{ matrix.file_extension }}
