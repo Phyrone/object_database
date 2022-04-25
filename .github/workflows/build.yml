@@ -5,25 +5,35 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+
 env:
   CARGO_TERM_COLOR: always
+  CACHE_KEY: ${{ runner.os }}/${{ github.ref }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: branch_name
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+#      - uses: Swatinem/rust-cache@v1
+#        with:
+#          cache-key: "${{ steps.branch_name.outputs.branch }}"
+
       - name: Cache
         uses: actions/cache@v3
         with:
           path: |
-            ./target/
-            Cargo.lock
-          key: ${{ runner.os }}-${{ steps.branch_name.outputs.branch }}
+            **/target/
+            **/Cargo.lock
+          key: ${{ env.CACHE_KEY }}
       - name: Build
         run: cargo build
       - name: Run tests
@@ -31,22 +41,19 @@ jobs:
       - name: Run benchmarks
         run: cargo bench
   docs:
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     needs:
       - build
     steps:
       - uses: actions/checkout@v3
-      - name: branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: branch_name
       - name: Cache
         uses: actions/cache@v3
         with:
           path: |
-            ./target/
-            Cargo.lock
-          key: ${{ runner.os }}-${{ steps.branch_name.outputs.branch }}
+            **/target/
+            **/Cargo.lock
+          key: ${{ env.CACHE_KEY }}
       - name: Generate Docs
         run: cargo doc
       - name: Deploy 🚀
