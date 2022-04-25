@@ -4,6 +4,7 @@ on:
   push:
     branches-ignore:
       - renovate/*
+      - main
   pull_request:
 
 env:
