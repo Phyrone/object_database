@@ -1,0 +1,34 @@
+name: Build
+
+on:
+  push:
+    branches-ignore:
+      - renovate/*
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: branch_name
+    - name: Cache
+      uses: actions/cache@v3
+      with:
+        path: | 
+          ./target/
+          Cargo.lock
+        key: ${{ runner.os }}-${{ steps.branch_name.outputs.branch }}
+    - name: Build
+      run: cargo build
+    - name: Run tests
+      run: cargo test
+    - name: Run benchmarks
+      run: cargo bench
+
