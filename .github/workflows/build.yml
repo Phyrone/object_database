@@ -16,6 +16,7 @@ env:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -33,6 +34,7 @@ jobs:
       - name: Run benchmarks
         run: cargo bench
   docs:
+    name: Docs
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
