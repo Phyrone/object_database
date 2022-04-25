@@ -12,7 +12,6 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  CACHE_KEY: ${{ runner.os }}/${{ github.ref }}
 
 jobs:
   build:
@@ -23,9 +22,9 @@ jobs:
         with:
           profile: minimal
           toolchain: stable
-#      - uses: Swatinem/rust-cache@v1
-#        with:
-#          cache-key: "${{ steps.branch_name.outputs.branch }}"
+      #      - uses: Swatinem/rust-cache@v1
+      #        with:
+      #          cache-key: "${{ steps.branch_name.outputs.branch }}"
 
       - name: Cache
         uses: actions/cache@v3
@@ -33,7 +32,7 @@ jobs:
           path: |
             **/target/
             **/Cargo.lock
-          key: ${{ env.CACHE_KEY }}
+          key: ${{ runner.os }}/${{ github.ref }}
       - name: Build
         run: cargo build
       - name: Run tests
@@ -53,7 +52,7 @@ jobs:
           path: |
             **/target/
             **/Cargo.lock
-          key: ${{ env.CACHE_KEY }}
+          key: ${{ runner.os }}/${{ github.ref }}
       - name: Generate Docs
         run: cargo doc
       - name: Deploy 🚀
