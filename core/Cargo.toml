@@ -9,4 +9,4 @@ common = { path = "../common" }
 plugin_api = { path = "../plugin_api" }
 async-trait = "0.1.53"
 stretto = { version = "0.4.3", features = ["async"] }
-tokio = { version = "1.18.0", features = ["full"] }
+tokio = { version = "1.18.1", features = ["full"] }
