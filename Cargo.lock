@@ -802,6 +802,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "octets"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3fa906ec83d76442cc421a362fa8c131caa513ca19af87dc5736b6679b43240d"
+
+[[package]]
 name = "once_cell"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -987,15 +993,16 @@ dependencies = [
 
 [[package]]
 name = "quiche"
-version = "0.12.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5390b3f1175b20fab072b2dd161e01284101ac73f2c25b003730ad1a8d3f7d55"
+checksum = "6c5c56b382a3b768e5d595ac81a7896c38672eb8aaaa449d7ca4f5e459fa10f6"
 dependencies = [
  "cmake",
  "lazy_static",
  "libc",
  "libm",
  "log",
+ "octets",
  "ring",
  "winapi",
 ]
