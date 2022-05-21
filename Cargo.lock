@@ -1269,9 +1269,9 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
 name = "stretto"
-version = "0.4.3"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f07295bf95b359d1046fb0ca5beca2bdd45eb0948cc67fdbc432d9549dd9c11"
+checksum = "b732699966c4b09efc360140476fc10fa53e41651bf2026c43cddbaa320cd64a"
 dependencies = [
  "atomic",
  "crossbeam-channel",
