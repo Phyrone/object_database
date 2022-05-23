@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/stretto-0.4.4/src/cache/axync.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>axync.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/stretto-0.4.5/src/cache/axync.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>axync.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../stretto/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -654,19 +654,37 @@
 <span id="649">649</span>
 <span id="650">650</span>
 <span id="651">651</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::collections::hash_map::RandomState</span>;
-<span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
-<span class="kw">use</span> <span class="ident">std::hash</span>::{<span class="ident">BuildHasher</span>, <span class="ident">Hash</span>};
-<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
-<span class="kw">use</span> <span class="ident">std::sync::atomic</span>::{<span class="ident">AtomicBool</span>, <span class="ident">Ordering</span>};
-<span class="kw">use</span> <span class="ident">std::time::Duration</span>;
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::axync</span>::{
+    <span class="ident">bounded</span>, <span class="ident">select</span>, <span class="ident">sleep</span>, <span class="ident">spawn</span>, <span class="ident">stop_channel</span>, <span class="ident">unbounded</span>, <span class="ident">Instant</span>, <span class="ident">JoinHandle</span>, <span class="ident">Receiver</span>, <span class="ident">Sender</span>,
+    <span class="ident">UnboundedReceiver</span>, <span class="ident">UnboundedSender</span>, <span class="ident">WaitGroup</span>,
+};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::cache::builder::CacheBuilderCore</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">metrics::MetricType</span>, <span class="ident">CacheCallback</span>, <span class="ident">CacheError</span>, <span class="ident">Coster</span>, <span class="ident">DefaultCacheCallback</span>, <span class="ident">DefaultCoster</span>, <span class="ident">DefaultUpdateValidator</span>, <span class="ident">KeyBuilder</span>, <span class="ident">Metrics</span>, <span class="ident">UpdateValidator</span>, <span class="ident">DefaultKeyBuilder</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::axync</span>::{<span class="ident">bounded</span>, <span class="ident">Receiver</span>, <span class="ident">Sender</span>, <span class="ident">stop_channel</span>, <span class="ident">unbounded</span>, <span class="ident">UnboundedReceiver</span>, <span class="ident">UnboundedSender</span>, <span class="ident">WaitGroup</span>, <span class="ident">select</span>, <span class="ident">JoinHandle</span>, <span class="ident">sleep</span>, <span class="ident">Instant</span>, <span class="ident">spawn</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::policy::AsyncLFUPolicy</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::store::ShardedMap</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ttl</span>::{<span class="ident">ExpirationMap</span>, <span class="ident">Time</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">metrics::MetricType</span>, <span class="ident">CacheCallback</span>, <span class="ident">CacheError</span>, <span class="ident">Coster</span>, <span class="ident">DefaultCacheCallback</span>, <span class="ident">DefaultCoster</span>,
+    <span class="ident">DefaultKeyBuilder</span>, <span class="ident">DefaultUpdateValidator</span>, <span class="ident">KeyBuilder</span>, <span class="ident">Metrics</span>, <span class="ident">UpdateValidator</span>,
+};
+<span class="kw">use</span> <span class="ident">std::collections::hash_map::RandomState</span>;
+<span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
+<span class="kw">use</span> <span class="ident">std::hash</span>::{<span class="ident">BuildHasher</span>, <span class="ident">Hash</span>};
+<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
+<span class="kw">use</span> <span class="ident">std::sync::atomic</span>::{<span class="ident">AtomicBool</span>, <span class="ident">Ordering</span>};
+<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
+<span class="kw">use</span> <span class="ident">std::time::Duration</span>;
 
 <span class="doccomment">/// The `AsyncCacheBuilder` struct is used when creating [`AsyncCache`] instances if you want to customize the [`AsyncCache`] settings.</span>
 <span class="doccomment">///</span>
@@ -766,8 +784,8 @@
 <span class="doccomment">/// [`Coster`]: trait.Coster.html</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AsyncCacheBuilder</span><span class="op">&lt;</span>
-    <span class="ident">K</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>,
-    <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">K</span>,
+    <span class="ident">V</span>,
     <span class="ident">KH</span> <span class="op">=</span> <span class="ident">DefaultKeyBuilder</span>,
     <span class="ident">C</span> <span class="op">=</span> <span class="ident">DefaultCoster</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
     <span class="ident">U</span> <span class="op">=</span> <span class="ident">DefaultUpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
@@ -777,9 +795,7 @@
     <span class="ident">inner</span>: <span class="ident">CacheBuilderCore</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span>, <span class="ident">KH</span>, <span class="ident">C</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>, <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>
-<span class="ident">AsyncCacheBuilder</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span><span class="op">&gt;</span>
-{
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>, <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">AsyncCacheBuilder</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create a new AsyncCacheBuilder</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">num_counters</span>: <span class="ident">usize</span>, <span class="ident">max_cost</span>: <span class="ident">i64</span>) -&gt; <span class="self">Self</span> {
@@ -789,9 +805,7 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>, <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>, <span class="ident">KH</span>: <span class="ident">KeyBuilder</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span><span class="op">&gt;</span>
-<span class="ident">AsyncCacheBuilder</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span>, <span class="ident">KH</span><span class="op">&gt;</span>
-{
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>, <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>, <span class="ident">KH</span>: <span class="ident">KeyBuilder</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">AsyncCacheBuilder</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span>, <span class="ident">KH</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create a new AsyncCacheBuilder</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_with_key_builder</span>(<span class="ident">num_counters</span>: <span class="ident">usize</span>, <span class="ident">max_cost</span>: <span class="ident">i64</span>, <span class="ident">kh</span>: <span class="ident">KH</span>) -&gt; <span class="self">Self</span> {
@@ -802,15 +816,15 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span>, <span class="ident">KH</span>, <span class="ident">C</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span> <span class="ident">AsyncCacheBuilder</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span>, <span class="ident">KH</span>, <span class="ident">C</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">K</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>,
-        <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">KH</span>: <span class="ident">KeyBuilder</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span>,
-        <span class="ident">C</span>: <span class="ident">Coster</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">U</span>: <span class="ident">UpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">CB</span>: <span class="ident">CacheCallback</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Send</span>, {
-
+<span class="kw">where</span>
+    <span class="ident">K</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>,
+    <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">KH</span>: <span class="ident">KeyBuilder</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span>,
+    <span class="ident">C</span>: <span class="ident">Coster</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
+    <span class="ident">U</span>: <span class="ident">UpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
+    <span class="ident">CB</span>: <span class="ident">CacheCallback</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
+    <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Send</span>,
+{
     <span class="doccomment">/// Build Cache and start all threads needed by the Cache.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">finalize</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AsyncCache</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span>, <span class="ident">KH</span>, <span class="ident">C</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">CacheError</span><span class="op">&gt;</span> {
@@ -868,7 +882,7 @@
             <span class="ident">metrics</span>.<span class="ident">clone</span>(),
             <span class="ident">callback</span>.<span class="ident">clone</span>(),
         )
-            .<span class="ident">spawn</span>();
+        .<span class="ident">spawn</span>();
 
         <span class="kw">let</span> <span class="ident">this</span> <span class="op">=</span> <span class="ident">AsyncCache</span> {
             <span class="ident">store</span>,
@@ -889,11 +903,6 @@
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">CacheProcessor</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">U</span>: <span class="ident">UpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">CB</span>: <span class="ident">CacheCallback</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
     <span class="ident">insert_buf_rx</span>: <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">stop_rx</span>: <span class="ident">Receiver</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
@@ -909,13 +918,7 @@
     <span class="ident">cleanup_duration</span>: <span class="ident">Duration</span>,
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">CacheCleaner</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">V</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">U</span>: <span class="ident">UpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">CB</span>: <span class="ident">CacheCallback</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-{
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">CacheCleaner</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">V</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span>{
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">processor</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">CacheProcessor</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span>,
 }
 
@@ -973,7 +976,6 @@
         }
     }
 }
-
 
 <span class="doccomment">/// AsyncCache is a thread-safe async implementation of a hashmap with a TinyLFU admission</span>
 <span class="doccomment">/// policy and a Sampled LFU eviction policy. You can use the same AsyncCache instance</span>
@@ -1039,14 +1041,14 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span>, <span class="ident">KH</span>, <span class="ident">C</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span> <span class="ident">AsyncCache</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span>, <span class="ident">KH</span>, <span class="ident">C</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">K</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>,
-        <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">KH</span>: <span class="ident">KeyBuilder</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span>,
-        <span class="ident">C</span>: <span class="ident">Coster</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">U</span>: <span class="ident">UpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">CB</span>: <span class="ident">CacheCallback</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="kw">where</span>
+    <span class="ident">K</span>: <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Eq</span>,
+    <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">KH</span>: <span class="ident">KeyBuilder</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span>,
+    <span class="ident">C</span>: <span class="ident">Coster</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
+    <span class="ident">U</span>: <span class="ident">UpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
+    <span class="ident">CB</span>: <span class="ident">CacheCallback</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
+    <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
     <span class="doccomment">/// `insert` attempts to add the key-value item to the cache. If it returns false,</span>
     <span class="doccomment">/// then the `insert` was dropped and the key-value item isn&#39;t added to the cache. If</span>
@@ -1063,30 +1065,47 @@
 
     <span class="doccomment">/// `try_insert` is the non-panicking version of [`insert`](#method.insert)</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">try_insert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">val</span>: <span class="ident">V</span>, <span class="ident">cost</span>: <span class="ident">i64</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">CacheError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">try_insert_with_ttl</span>(<span class="ident">key</span>, <span class="ident">val</span>, <span class="ident">cost</span>, <span class="ident">Duration::ZERO</span>).<span class="kw">await</span>
+        <span class="self">self</span>.<span class="ident">try_insert_with_ttl</span>(<span class="ident">key</span>, <span class="ident">val</span>, <span class="ident">cost</span>, <span class="ident">Duration::ZERO</span>)
+            .<span class="kw">await</span>
     }
 
     <span class="doccomment">/// `insert_with_ttl` works like Set but adds a key-value pair to the cache that will expire</span>
     <span class="doccomment">/// after the specified TTL (time to live) has passed. A zero value means the value never</span>
     <span class="doccomment">/// expires, which is identical to calling `insert`.</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">insert_with_ttl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">val</span>: <span class="ident">V</span>, <span class="ident">cost</span>: <span class="ident">i64</span>, <span class="ident">ttl</span>: <span class="ident">Duration</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">try_insert_in</span>(<span class="ident">key</span>, <span class="ident">val</span>, <span class="ident">cost</span>, <span class="ident">ttl</span>, <span class="bool-val">false</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>()
+        <span class="self">self</span>.<span class="ident">try_insert_in</span>(<span class="ident">key</span>, <span class="ident">val</span>, <span class="ident">cost</span>, <span class="ident">ttl</span>, <span class="bool-val">false</span>)
+            .<span class="kw">await</span>
+            .<span class="ident">unwrap</span>()
     }
 
     <span class="doccomment">/// `try_insert_with_ttl` is the non-panicking version of [`insert_with_ttl`](#method.insert_with_ttl)</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">try_insert_with_ttl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">val</span>: <span class="ident">V</span>, <span class="ident">cost</span>: <span class="ident">i64</span>, <span class="ident">ttl</span>: <span class="ident">Duration</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">CacheError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">try_insert_with_ttl</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">key</span>: <span class="ident">K</span>,
+        <span class="ident">val</span>: <span class="ident">V</span>,
+        <span class="ident">cost</span>: <span class="ident">i64</span>,
+        <span class="ident">ttl</span>: <span class="ident">Duration</span>,
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">CacheError</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">try_insert_in</span>(<span class="ident">key</span>, <span class="ident">val</span>, <span class="ident">cost</span>, <span class="ident">ttl</span>, <span class="bool-val">false</span>).<span class="kw">await</span>
     }
 
     <span class="doccomment">/// `insert_if_present` is like `insert`, but only updates the value of an existing key. It</span>
     <span class="doccomment">/// does NOT add the key to cache if it&#39;s absent.</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">insert_if_present</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">val</span>: <span class="ident">V</span>, <span class="ident">cost</span>: <span class="ident">i64</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">try_insert_in</span>(<span class="ident">key</span>, <span class="ident">val</span>, <span class="ident">cost</span>, <span class="ident">Duration::ZERO</span>, <span class="bool-val">true</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>()
+        <span class="self">self</span>.<span class="ident">try_insert_in</span>(<span class="ident">key</span>, <span class="ident">val</span>, <span class="ident">cost</span>, <span class="ident">Duration::ZERO</span>, <span class="bool-val">true</span>)
+            .<span class="kw">await</span>
+            .<span class="ident">unwrap</span>()
     }
 
     <span class="doccomment">/// `try_insert_if_present` is the non-panicking version of [`insert_if_present`](#method.insert_if_present)</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">try_insert_if_present</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">val</span>: <span class="ident">V</span>, <span class="ident">cost</span>: <span class="ident">i64</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">CacheError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">try_insert_in</span>(<span class="ident">key</span>, <span class="ident">val</span>, <span class="ident">cost</span>, <span class="ident">Duration::ZERO</span>, <span class="bool-val">true</span>).<span class="kw">await</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">try_insert_if_present</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">key</span>: <span class="ident">K</span>,
+        <span class="ident">val</span>: <span class="ident">V</span>,
+        <span class="ident">cost</span>: <span class="ident">i64</span>,
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">CacheError</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">try_insert_in</span>(<span class="ident">key</span>, <span class="ident">val</span>, <span class="ident">cost</span>, <span class="ident">Duration::ZERO</span>, <span class="bool-val">true</span>)
+            .<span class="kw">await</span>
     }
 
     <span class="doccomment">/// wait until the previous operations finished.</span>
@@ -1097,10 +1116,12 @@
 
         <span class="kw">let</span> <span class="ident">wg</span> <span class="op">=</span> <span class="ident">WaitGroup::new</span>();
         <span class="kw">let</span> <span class="ident">wait_item</span> <span class="op">=</span> <span class="ident">Item::Wait</span>(<span class="ident">wg</span>.<span class="ident">add</span>(<span class="number">1</span>));
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">insert_buf_tx</span>
-            .<span class="ident">try_send</span>(<span class="ident">wait_item</span>) {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">insert_buf_tx</span>.<span class="ident">try_send</span>(<span class="ident">wait_item</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">wg</span>.<span class="ident">wait</span>().<span class="kw">await</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">CacheError::SendError</span>(<span class="macro">format!</span>(<span class="string">&quot;cache set buf sender: {}&quot;</span>, <span class="ident">e</span>.<span class="ident">to_string</span>()))),
+            <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">CacheError::SendError</span>(<span class="macro">format!</span>(
+                <span class="string">&quot;cache set buf sender: {}&quot;</span>,
+                <span class="ident">e</span>.<span class="ident">to_string</span>()
+            ))),
         }
     }
 
@@ -1140,19 +1161,23 @@
 
         <span class="self">self</span>.<span class="ident">clear</span>()<span class="question-mark">?</span>;
         <span class="comment">// Block until processItems thread is returned</span>
-        <span class="self">self</span>.<span class="ident">stop_tx</span>
-            .<span class="ident">send</span>(())
-            .<span class="kw">await</span>
-            .<span class="ident">map_err</span>(
-                <span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">CacheError::SendError</span>(<span class="macro">format!</span>(<span class="string">&quot;fail to send stop signal to working thread, {}&quot;</span>, <span class="ident">e</span>))
-            )<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">stop_tx</span>.<span class="ident">send</span>(()).<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
+            <span class="ident">CacheError::SendError</span>(<span class="macro">format!</span>(<span class="string">&quot;fail to send stop signal to working thread, {}&quot;</span>, <span class="ident">e</span>))
+        })<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">policy</span>.<span class="ident">close</span>().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">is_closed</span>.<span class="ident">store</span>(<span class="bool-val">true</span>, <span class="ident">Ordering::SeqCst</span>);
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">try_insert_in</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">val</span>: <span class="ident">V</span>, <span class="ident">cost</span>: <span class="ident">i64</span>, <span class="ident">ttl</span>: <span class="ident">Duration</span>, <span class="ident">only_update</span>: <span class="ident">bool</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">CacheError</span><span class="op">&gt;</span> {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">try_insert_in</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">key</span>: <span class="ident">K</span>,
+        <span class="ident">val</span>: <span class="ident">V</span>,
+        <span class="ident">cost</span>: <span class="ident">i64</span>,
+        <span class="ident">ttl</span>: <span class="ident">Duration</span>,
+        <span class="ident">only_update</span>: <span class="ident">bool</span>,
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">CacheError</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_closed</span>.<span class="ident">load</span>(<span class="ident">Ordering::SeqCst</span>) {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
         }
@@ -1161,29 +1186,29 @@
             <span class="kw">let</span> <span class="ident">is_update</span> <span class="op">=</span> <span class="ident">item</span>.<span class="ident">is_update</span>();
             <span class="comment">// Attempt to send item to policy.</span>
             <span class="macro">select!</span> {
-                    <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">insert_buf_tx</span>.<span class="ident">send</span>(<span class="ident">item</span>) =&gt; <span class="ident">res</span>.<span class="ident">map_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
-                       <span class="kw">if</span> <span class="ident">is_update</span> {
-                            <span class="comment">// Return true if this was an update operation since we&#39;ve already</span>
-                            <span class="comment">// updated the store. For all the other operations (set/delete), we</span>
-                            <span class="comment">// return false which means the item was not inserted.</span>
-                            <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
-                        } <span class="kw">else</span> {
-                            <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">add</span>(<span class="ident">MetricType::DropSets</span>, <span class="ident">index</span>, <span class="number">1</span>);
-                            <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
-                        }
-                    }, <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)),
-                    <span class="kw">else</span> =&gt; {
-                        <span class="kw">if</span> <span class="ident">is_update</span> {
-                            <span class="comment">// Return true if this was an update operation since we&#39;ve already</span>
-                            <span class="comment">// updated the store. For all the other operations (set/delete), we</span>
-                            <span class="comment">// return false which means the item was not inserted.</span>
-                            <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
-                        } <span class="kw">else</span> {
-                            <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">add</span>(<span class="ident">MetricType::DropSets</span>, <span class="ident">index</span>, <span class="number">1</span>);
-                            <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
-                        }
+                <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">insert_buf_tx</span>.<span class="ident">send</span>(<span class="ident">item</span>) =&gt; <span class="ident">res</span>.<span class="ident">map_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+                   <span class="kw">if</span> <span class="ident">is_update</span> {
+                        <span class="comment">// Return true if this was an update operation since we&#39;ve already</span>
+                        <span class="comment">// updated the store. For all the other operations (set/delete), we</span>
+                        <span class="comment">// return false which means the item was not inserted.</span>
+                        <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
+                    } <span class="kw">else</span> {
+                        <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">add</span>(<span class="ident">MetricType::DropSets</span>, <span class="ident">index</span>, <span class="number">1</span>);
+                        <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
+                    }
+                }, <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)),
+                <span class="kw">else</span> =&gt; {
+                    <span class="kw">if</span> <span class="ident">is_update</span> {
+                        <span class="comment">// Return true if this was an update operation since we&#39;ve already</span>
+                        <span class="comment">// updated the store. For all the other operations (set/delete), we</span>
+                        <span class="comment">// return false which means the item was not inserted.</span>
+                        <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
+                    } <span class="kw">else</span> {
+                        <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">add</span>(<span class="ident">MetricType::DropSets</span>, <span class="ident">index</span>, <span class="number">1</span>);
+                        <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
                     }
                 }
+            }
         } <span class="kw">else</span> {
             <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
         }
@@ -1191,11 +1216,11 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span> <span class="ident">CacheProcessor</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">U</span>: <span class="ident">UpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">CB</span>: <span class="ident">CacheCallback</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Send</span>,
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">U</span>: <span class="ident">UpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
+    <span class="ident">CB</span>: <span class="ident">CacheCallback</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
+    <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Send</span>,
 {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(
         <span class="ident">num_to_keep</span>: <span class="ident">usize</span>,
@@ -1235,18 +1260,18 @@
 
             <span class="kw">loop</span> {
                 <span class="macro">select!</span> {
-                        <span class="ident">item</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">insert_buf_rx</span>.<span class="ident">recv</span>() =&gt; {
-                            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">handle_insert_event</span>(<span class="ident">item</span>)<span class="question-mark">?</span>;
-                        }
-                        <span class="kw">_</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">cleanup_timer</span> =&gt; {
-                            <span class="ident">cleanup_timer</span>.<span class="ident">as_mut</span>().<span class="ident">reset</span>(<span class="ident">Instant::now</span>() <span class="op">+</span> <span class="self">self</span>.<span class="ident">cleanup_duration</span>);
-                            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">handle_cleanup_event</span>()<span class="question-mark">?</span>;
-                        },
-                        <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">clear_rx</span>.<span class="ident">recv</span>() =&gt; {
-                            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">CacheCleaner::new</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>).<span class="ident">clean</span>().<span class="kw">await</span><span class="question-mark">?</span>;
-                        },
-                        <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">stop_rx</span>.<span class="ident">recv</span>() =&gt; <span class="kw">return</span> <span class="self">self</span>.<span class="ident">handle_close_event</span>(),
+                    <span class="ident">item</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">insert_buf_rx</span>.<span class="ident">recv</span>() =&gt; {
+                        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">handle_insert_event</span>(<span class="ident">item</span>)<span class="question-mark">?</span>;
                     }
+                    <span class="kw">_</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">cleanup_timer</span> =&gt; {
+                        <span class="ident">cleanup_timer</span>.<span class="ident">as_mut</span>().<span class="ident">reset</span>(<span class="ident">Instant::now</span>() <span class="op">+</span> <span class="self">self</span>.<span class="ident">cleanup_duration</span>);
+                        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">handle_cleanup_event</span>()<span class="question-mark">?</span>;
+                    },
+                    <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">clear_rx</span>.<span class="ident">recv</span>() =&gt; {
+                        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">CacheCleaner::new</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>).<span class="ident">clean</span>().<span class="kw">await</span><span class="question-mark">?</span>;
+                    },
+                    <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">stop_rx</span>.<span class="ident">recv</span>() =&gt; <span class="kw">return</span> <span class="self">self</span>.<span class="ident">handle_close_event</span>(),
+                }
             }
         })
     }
@@ -1261,9 +1286,8 @@
 
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">handle_insert_event</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">res</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CacheError</span><span class="op">&gt;</span> {
-        <span class="ident">res</span>
-          .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">CacheError::RecvError</span>(<span class="macro">format!</span>(<span class="string">&quot;fail to receive msg from insert buffer&quot;</span>)))
-          .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">handle_item</span>(<span class="ident">item</span>))
+        <span class="ident">res</span>.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">CacheError::RecvError</span>(<span class="macro">format!</span>(<span class="string">&quot;fail to receive msg from insert buffer&quot;</span>)))
+            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">handle_item</span>(<span class="ident">item</span>))
     }
 
     <span class="attribute">#[<span class="ident">inline</span>]</span>
@@ -1280,23 +1304,23 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">V</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span> <span class="ident">CacheCleaner</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">V</span>, <span class="ident">U</span>, <span class="ident">CB</span>, <span class="ident">S</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">U</span>: <span class="ident">UpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">CB</span>: <span class="ident">CacheCallback</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
-        <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Send</span>,
+<span class="kw">where</span>
+    <span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">U</span>: <span class="ident">UpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
+    <span class="ident">CB</span>: <span class="ident">CacheCallback</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
+    <span class="ident">S</span>: <span class="ident">BuildHasher</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Send</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">clean</span>(<span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CacheError</span><span class="op">&gt;</span> {
         <span class="kw">loop</span> {
             <span class="macro">select!</span> {
-                    <span class="comment">// clear out the insert buffer channel.</span>
-                    <span class="prelude-val">Some</span>(<span class="ident">item</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">processor</span>.<span class="ident">insert_buf_rx</span>.<span class="ident">recv</span>() =&gt; {
-                        <span class="self">self</span>.<span class="ident">handle_item</span>(<span class="ident">item</span>);
-                    },
-                    <span class="kw">_</span> <span class="op">=</span> <span class="kw">async</span> {} =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
-                    <span class="kw">else</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
-                }
+                <span class="comment">// clear out the insert buffer channel.</span>
+                <span class="prelude-val">Some</span>(<span class="ident">item</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">processor</span>.<span class="ident">insert_buf_rx</span>.<span class="ident">recv</span>() =&gt; {
+                    <span class="self">self</span>.<span class="ident">handle_item</span>(<span class="ident">item</span>);
+                },
+                <span class="kw">_</span> <span class="op">=</span> <span class="kw">async</span> {} =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
+                <span class="kw">else</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
+            }
         }
     }
 }

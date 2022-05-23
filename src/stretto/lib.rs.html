@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/stretto-0.4.4/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/stretto-0.4.5/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../stretto/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -547,6 +547,7 @@
 <span id="542">542</span>
 <span id="543">543</span>
 <span id="544">544</span>
+<span id="545">545</span>
 </pre><pre class="rust"><code><span class="doccomment">//! &lt;div align=&quot;center&quot;&gt;</span>
 <span class="doccomment">//! &lt;h1&gt;Stretto&lt;/h1&gt;</span>
 <span class="doccomment">//! &lt;/div&gt;</span>
@@ -723,11 +724,9 @@
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>, <span class="ident">clippy::type_complexity</span>)]</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">feature</span>(<span class="ident">doc_cfg</span>))]</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">allow</span>(<span class="ident">unused_attributes</span>))]</span>
-<span class="kw">mod</span> <span class="ident">error</span>;
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
-<span class="kw">mod</span> <span class="ident">macros</span>;
 <span class="kw">mod</span> <span class="ident">bbloom</span>;
 <span class="kw">mod</span> <span class="ident">cache</span>;
+<span class="kw">mod</span> <span class="ident">error</span>;
 <span class="kw">mod</span> <span class="ident">histogram</span>;
 <span class="kw">mod</span> <span class="ident">metrics</span>;
 <span class="doccomment">/// This package includes multiple probabalistic data structures needed for</span>
@@ -753,46 +752,49 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde</span>;
 
-<span class="macro">cfg_async!</span>(
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">axync</span> {
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">tokio::select</span>;
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">tokio::sync::mpsc</span>::{
-            <span class="ident">channel</span> <span class="kw">as</span> <span class="ident">bounded</span>, <span class="ident">Receiver</span>, <span class="ident">Sender</span>, <span class="ident">UnboundedReceiver</span>, <span class="ident">UnboundedSender</span>,
-        };
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">tokio::task</span>::{<span class="ident">spawn</span>, <span class="ident">JoinHandle</span>};
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">tokio::time</span>::{<span class="ident">sleep</span>, <span class="ident">Instant</span>};
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">WaitGroup</span> <span class="op">=</span> <span class="ident">wg::AsyncWaitGroup</span>;
-        <span class="kw">use</span> <span class="ident">tokio::sync::mpsc::unbounded_channel</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)))]</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">axync</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">tokio::select</span>;
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">tokio::sync::mpsc</span>::{
+        <span class="ident">channel</span> <span class="kw">as</span> <span class="ident">bounded</span>, <span class="ident">Receiver</span>, <span class="ident">Sender</span>, <span class="ident">UnboundedReceiver</span>, <span class="ident">UnboundedSender</span>,
+    };
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">tokio::task</span>::{<span class="ident">spawn</span>, <span class="ident">JoinHandle</span>};
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">tokio::time</span>::{<span class="ident">sleep</span>, <span class="ident">Instant</span>};
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">WaitGroup</span> <span class="op">=</span> <span class="ident">wg::AsyncWaitGroup</span>;
+    <span class="kw">use</span> <span class="ident">tokio::sync::mpsc::unbounded_channel</span>;
 
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">stop_channel</span>() -&gt; (<span class="ident">Sender</span><span class="op">&lt;</span>()<span class="op">&gt;</span>, <span class="ident">Receiver</span><span class="op">&lt;</span>()<span class="op">&gt;</span>) {
-            <span class="ident">bounded</span>(<span class="number">1</span>)
-        }
-
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">unbounded</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() -&gt; (<span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
-            <span class="ident">unbounded_channel</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>()
-        }
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">stop_channel</span>() -&gt; (<span class="ident">Sender</span><span class="op">&lt;</span>()<span class="op">&gt;</span>, <span class="ident">Receiver</span><span class="op">&lt;</span>()<span class="op">&gt;</span>) {
+        <span class="ident">bounded</span>(<span class="number">1</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">cache</span>::{<span class="ident">AsyncCache</span>, <span class="ident">AsyncCacheBuilder</span>};
-);
-
-<span class="macro">cfg_sync!</span>(
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">sync</span> {
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">crossbeam_channel</span>::{<span class="ident">bounded</span>, <span class="ident">select</span>, <span class="ident">unbounded</span>, <span class="ident">Receiver</span>, <span class="ident">Sender</span>};
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">std::thread</span>::{<span class="ident">spawn</span>, <span class="ident">JoinHandle</span>};
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">std::time::Instant</span>;
-
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">WaitGroup</span> <span class="op">=</span> <span class="ident">wg::WaitGroup</span>;
-
-        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">stop_channel</span>() -&gt; (<span class="ident">Sender</span><span class="op">&lt;</span>()<span class="op">&gt;</span>, <span class="ident">Receiver</span><span class="op">&lt;</span>()<span class="op">&gt;</span>) {
-            <span class="ident">bounded</span>(<span class="number">0</span>)
-        }
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">unbounded</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() -&gt; (<span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
+        <span class="ident">unbounded_channel</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>()
     }
+}
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">cache</span>::{<span class="ident">AsyncCache</span>, <span class="ident">AsyncCacheBuilder</span>};
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">cache</span>::{<span class="ident">Cache</span>, <span class="ident">CacheBuilder</span>};
-);
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;sync&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;sync&quot;</span>)))]</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">sync</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">crossbeam_channel</span>::{<span class="ident">bounded</span>, <span class="ident">select</span>, <span class="ident">unbounded</span>, <span class="ident">Receiver</span>, <span class="ident">Sender</span>};
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">std::thread</span>::{<span class="ident">spawn</span>, <span class="ident">JoinHandle</span>};
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">std::time::Instant</span>;
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">UnboundedSender</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">WaitGroup</span> <span class="op">=</span> <span class="ident">wg::WaitGroup</span>;
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">stop_channel</span>() -&gt; (<span class="ident">Sender</span><span class="op">&lt;</span>()<span class="op">&gt;</span>, <span class="ident">Receiver</span><span class="op">&lt;</span>()<span class="op">&gt;</span>) {
+        <span class="ident">bounded</span>(<span class="number">0</span>)
+    }
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;sync&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;sync&quot;</span>)))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">cache</span>::{<span class="ident">Cache</span>, <span class="ident">CacheBuilder</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">error::CacheError</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">histogram::Histogram</span>;
@@ -873,7 +875,7 @@
 
 <span class="doccomment">/// DefaultUpdateValidator is a noop update validator.</span>
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DefaultUpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DefaultUpdateValidator</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span> {
     <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>(<span class="ident">V</span>)<span class="op">&gt;</span>,
 }
 
@@ -1050,7 +1052,7 @@
 <span class="doccomment">/// [`DefaultKeyBuilder`]: struct.DefaultKeyBuilder.html</span>
 <span class="doccomment">/// [`TransparentKey`]: trait.TransparentKey.html</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TransparentKeyBuilder</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">TransparentKey</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TransparentKeyBuilder</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span> {
     <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">K</span><span class="op">&gt;</span>,
 }
 
