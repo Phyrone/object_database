@@ -20,7 +20,7 @@ cached = "0.34.0"
 clap = { version = "3.1.18", features = ["derive", "color"] }
 log = "0.4.17"
 log4rs = "1.0.0"
-tokio = { version = "1.18.2", features = ["full", "rt-multi-thread"] }
+tokio = { version = "1.19.0", features = ["full", "rt-multi-thread"] }
 #pbr = "1.0.4"
 #v8 = "0.41.0"
 config = { version = "0.13.1", features = ["json", "yaml"] }
