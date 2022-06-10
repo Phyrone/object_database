@@ -14,9 +14,9 @@ stability guarantees. Don’t rely on anything here.</p>
 trait and it is technically possible to implement it for custom types (this crate also
 implements it for <a href="https://doc.rust-lang.org/1.61.0/alloc/rc/struct.Rc.html"><code>Rc</code></a> and <a href="https://doc.rust-lang.org/1.61.0/alloc/sync/struct.Weak.html"><code>Weak</code></a>, though the actual usefulness of these is a bit
 questionable).</p>
-<p>The raw pointer is stored inside an <a href="https://doc.rust-lang.org/1.61.0/core/sync/atomic/struct.AtomicPtr.html"><code>AtomicPtr</code></a>.</p>
+<p>The raw pointer is stored inside an <a href="../../../core/sync/atomic/struct.AtomicPtr.html"><code>AtomicPtr</code></a>.</p>
 <h2 id="protection-of-reference-counts"><a href="#protection-of-reference-counts">Protection of reference counts</a></h2>
-<p>The first idea would be to just use <a href="https://doc.rust-lang.org/1.61.0/core/sync/atomic/struct.AtomicPtr.html"><code>AtomicPtr</code></a> with whatever the <a href="https://doc.rust-lang.org/1.61.0/alloc/sync/struct.Arc.html#method.into_raw"><code>Arc::into_raw</code></a> returns.
+<p>The first idea would be to just use <a href="../../../core/sync/atomic/struct.AtomicPtr.html"><code>AtomicPtr</code></a> with whatever the <a href="https://doc.rust-lang.org/1.61.0/alloc/sync/struct.Arc.html#method.into_raw"><code>Arc::into_raw</code></a> returns.
 Then replacing it would be fine (there’s no need to update ref counts). The load needs to
 increment the reference count ‒ one still stays inside and another is returned to the caller.
 This is done by re-creating the Arc from the raw pointer and then cloning it, throwing one

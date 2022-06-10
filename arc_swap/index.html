@@ -50,7 +50,7 @@ characteristics than the <a href="https://doc.rust-lang.org/std/sync/struct.RwLo
 }</code></pre></div>
 <h2 id="crate-contents"><a href="#crate-contents">Crate contents</a></h2>
 <p>At the heart of the crate there are <a href="type.ArcSwap.html" title="ArcSwap"><code>ArcSwap</code></a> and <a href="type.ArcSwapOption.html" title="ArcSwapOption"><code>ArcSwapOption</code></a> types, containers for an
-<a href="https://doc.rust-lang.org/1.61.0/alloc/sync/struct.Arc.html" title="Arc"><code>Arc</code></a> and <a href="https://doc.rust-lang.org/1.61.0/core/option/enum.Option.html" title="Option"><code>Option&lt;Arc&gt;</code></a>.</p>
+<a href="https://doc.rust-lang.org/1.61.0/alloc/sync/struct.Arc.html" title="Arc"><code>Arc</code></a> and <a href="../core/option/enum.Option.html" title="Option"><code>Option&lt;Arc&gt;</code></a>.</p>
 <p>Technically, these are type aliases for partial instantiations of the <a href="struct.ArcSwapAny.html" title="ArcSwapAny"><code>ArcSwapAny</code></a> type. The
 <a href="struct.ArcSwapAny.html" title="ArcSwapAny"><code>ArcSwapAny</code></a> is more flexible and allows tweaking of many things (can store other things than
 <a href="https://doc.rust-lang.org/1.61.0/alloc/sync/struct.Arc.html" title="Arc"><code>Arc</code></a>s, can configure the locking <a href="strategy/trait.Strategy.html" title="Strategy"><code>Strategy</code></a>). For details about the tweaking, see the
