@@ -17,7 +17,7 @@ homepage = "https://github.com/Phyrone/object_database"
 [dependencies]
 core = { path = "./core" }
 cached = "0.34.1"
-clap = { version = "3.2.2", features = ["derive", "color"] }
+clap = { version = "3.2.4", features = ["derive", "color"] }
 log = "0.4.17"
 log4rs = "1.0.0"
 tokio = { version = "1.19.2", features = ["full", "rt-multi-thread"] }
